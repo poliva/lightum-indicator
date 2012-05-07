@@ -35,5 +35,6 @@ uninstall:
 	rm -rf $(bindir)/lightum-indicator
 	rm -rf $(appdir)/lightum-indicator.desktop
 	rm -rf $(docdir)/lightum-indicator/
+	rm -rf $(shadir)
 
 clean:
