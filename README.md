@@ -12,7 +12,7 @@ This is a simple indicator applet that allows users of [lightum](https://github.
 ![alt text](https://github.com/poliva/lightum-indicator/raw/master/icons/lightum-indicator.png "lightum-indicator screenshot")
 
 ## Ubuntu Pakcages
-Official Ubuntu packages are available in poliva/lightum-mba ppa:
+Official Ubuntu packages are available in [poliva/lightum-mba ppa](https://launchpad.net/~poliva/+archive/lightum-mba):
 
      sudo add-apt-repository ppa:poliva/lightum-mba
      sudo apt-get update
