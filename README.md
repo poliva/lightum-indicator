@@ -8,6 +8,10 @@ Indicator for Lightum light sensor daemon
 
 This is a simple indicator applet that allows users of [lightum](https://github.com/poliva/lightum) to control it from the pannel.
 
+## Screenshot
+![alt text](https://github.com/poliva/lightum-indicator/raw/master/icons/lightum-indicator.png "lightum-indicator screenshot")
+
+## Ubuntu Pakcages
 Official Ubuntu packages are available in poliva/lightum-mba ppa:
 
      sudo add-apt-repository ppa:poliva/lightum-mba
