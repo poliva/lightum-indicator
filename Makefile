@@ -10,6 +10,8 @@ docdir = $(prefix)/usr/share/doc
 shadir = $(prefix)/usr/share/lightum-indicator
 appdir = $(prefix)/usr/share/applications
 
+all:
+
 install:
 	mkdir -p $(bindir)
 	$(INSTALL) $(srcdir)/lightum-indicator $(bindir)/lightum-indicator
@@ -33,3 +35,5 @@ uninstall:
 	rm -rf $(bindir)/lightum-indicator
 	rm -rf $(appdir)/lightum-indicator.desktop
 	rm -rf $(docdir)/lightum-indicator/
+
+clean:
