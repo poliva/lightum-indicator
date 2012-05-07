@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/lightum-indicator
+Icon=/usr/share/lightum-indicator/icons/lightum.png
+Categories=Settings;Utility;DesktopSettings;
+Terminal=false
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Lightum Indicator
+Name=Lightum Indicator
+Comment[en_US]=Indicator for Lightum light sensor daemon.
+Comment=Indicator for Lightum light sensor daemon.

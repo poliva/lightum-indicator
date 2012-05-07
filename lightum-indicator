@@ -1,0 +1,289 @@
+#!/bin/bash
+# lightum-indicator script
+# (c)2012 Pau Oliva Fora
+# License: GPLv2+
+
+VERSION="0.1"
+
+function lightumreload ()
+{
+	echo "#!/bin/bash" >${CONFDIR}/lightum-reload.$$
+	echo "kill $$" >>${CONFDIR}/lightum-reload.$$
+	echo "ps ax |grep 'cappind-lightum.py' |grep -v grep |awk '{print \$1}' |xargs -n 1 kill" >> ${CONFDIR}/lightum-reload.$$
+	echo "$0 &" >> ${CONFDIR}/lightum-reload.$$
+	echo "rm ${CONFDIR}/lightum-reload.$$" >> ${CONFDIR}/lightum-reload.$$
+	chmod 755 ${CONFDIR}/lightum-reload.$$
+}
+
+CONFDIR="${HOME}/.config/lightum/"
+CONFIG="${CONFDIR}/lightum.conf"
+ZEN="zenity --name=lightum --title=lightum " 
+
+if [ ! -e "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
+	cp /usr/share/applications/lightum-indicator.desktop ${HOME}/.config/autostart/lightum-indicator.desktop
+fi
+
+manualmode=`cat ${CONFIG} |grep "^manualmode="`
+case "$manualmode" in
+"manualmode=1")
+MANUALMODEOPTS="Mode:Auto
+Mode:*Manual"
+IC1="M"
+;;
+*)
+MANUALMODEOPTS="Mode:*Auto
+Mode:Manual"
+IC1="A"
+;;
+esac
+
+workmode=`cat ${CONFIG} |grep "^workmode="`
+case "$workmode" in
+"workmode=1")
+WORKMODEOPTS="Manage:Screen Only
+Manage:*Keyboard Only
+Manage:Screen + Keyboard
+Keyboard Options:Max Brightness
+Keyboard Options:Min Brightness
+Keyboard Options:Dim on idle time
+Screen Options:*Max Backlight
+Screen Options:*Min Backlight
+Screen Options:*Dim on idle time"
+IC2="K"
+;;
+
+"workmode=2")
+WORKMODEOPTS="Manage:*Screen Only
+Manage:Keyboard Only
+Manage:Screen + Keyboard
+Keyboard Options:*Max Brightness
+Keyboard Options:*Min Brightness
+Keyboard Options:*Dim on idle time
+Screen Options:Max Backlight
+Screen Options:Min Backlight
+Screen Options:Dim on idle time"
+IC2="S"
+;;
+
+*)
+WORKMODEOPTS="Manage:Screen Only
+Manage:Keyboard Only
+Manage:*Screen + Keyboard
+Keyboard Options:Max Brightness
+Keyboard Options:Min Brightness
+Keyboard Options:Dim on idle time
+Screen Options:Max Backlight
+Screen Options:Min Backlight
+Screen Options:Dim on idle time"
+IC2="B"
+;;
+
+esac
+
+ICON="/usr/share/lightum-indicator/icons/${IC1}${IC2}.png"
+
+echo "$MANUALMODEOPTS
+$WORKMODEOPTS
+About" | \
+/usr/share/lightum-indicator/cappind-lightum.py -p -i ${ICON} | \
+while read s; do
+case "$s" in
+
+"Mode:Auto") 
+	${ZEN} --no-wrap --question --text="Reload lightum in auto mode?"
+	if [ $? == 0 ]; then 
+		manualmode=`cat ${CONFIG} |grep "^manualmode="`
+		if [ -z "$manualmode" ]; then
+			echo "manualmode=0" >> ${CONFIG}
+		else
+			sed -i "s/^manualmode=.*/manualmode=0/" ${CONFIG}
+		fi
+		killall lightum 2>/dev/null
+		/usr/bin/lightum
+		lightumreload
+		${CONFDIR}/lightum-reload.$$ &
+	fi
+;;
+
+"Mode:Manual")
+	${ZEN} --no-wrap --question --text="Reload lightum in manual mode?"
+	if [ $? == 0 ]; then 
+		manualmode=`cat ${CONFIG} |grep "^manualmode="`
+		if [ -z "$manualmode" ]; then
+			echo "manualmode=1" >> ${CONFIG}
+		else
+			sed -i "s/^manualmode=.*/manualmode=1/" ${CONFIG}
+		fi
+		killall lightum 2>/dev/null
+		/usr/bin/lightum
+		lightumreload
+		${CONFDIR}/lightum-reload.$$ &
+	fi
+;;
+
+"Manage:Screen Only") 
+	${ZEN} --no-wrap --question --text="Manage only screen backlight?"
+	if [ $? == 0 ]; then 
+		workmode=`cat ${CONFIG} |grep "^workmode="`
+		if [ -z "$workmode" ]; then
+			echo "workmode=2" >> ${CONFIG}
+		else
+			sed -i "s/^workmode=.*/workmode=2/" ${CONFIG}
+		fi
+		killall lightum 2>/dev/null
+		/usr/bin/lightum
+		lightumreload
+		${CONFDIR}/lightum-reload.$$ &
+	fi
+;;
+
+"Manage:Keyboard Only")
+	${ZEN} --no-wrap --question --text="Manage only keyboard brightness?"
+	if [ $? == 0 ]; then 
+		workmode=`cat ${CONFIG} |grep "^workmode="`
+		if [ -z "$workmode" ]; then
+			echo "workmode=1" >> ${CONFIG}
+		else
+			sed -i "s/^workmode=.*/workmode=1/" ${CONFIG}
+		fi
+		killall lightum 2>/dev/null
+		/usr/bin/lightum
+		lightumreload
+		${CONFDIR}/lightum-reload.$$ &
+	fi
+;;
+
+"Manage:Screen + Keyboard")
+	${ZEN} --no-wrap --question --text="Manage both keyboard brightness and screen backlight?"
+	if [ $? == 0 ]; then 
+		workmode=`cat ${CONFIG} |grep "^workmode="`
+		if [ -z "$workmode" ]; then
+			echo "workmode=3" >> ${CONFIG}
+		else
+			sed -i "s/^workmode=.*/workmode=3/" ${CONFIG}
+		fi
+		killall lightum 2>/dev/null
+		/usr/bin/lightum
+		lightumreload
+		${CONFDIR}/lightum-reload.$$ &
+	fi
+;;
+"Keyboard Options:Max Brightness")
+	cv=`cat ${CONFIG} |grep "^maxbrightness=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=255 ; fi
+	ans=`${ZEN} --forms --add-entry="maximum keyboard brightness value (between 4 and 255)" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 255 ] && [ ${ans} -ge 4 ]; then
+			maxbrightness=`cat ${CONFIG} |grep "^maxbrightness="`
+			if [ -z "$maxbrightness" ]; then
+				echo "maxbrightness=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^maxbrightness=.*/maxbrightness=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "max keyboard brightness should be a value between 4 and 255."
+		fi
+	fi
+;;
+"Keyboard Options:Min Brightness")
+	cv=`cat ${CONFIG} |grep "^minbrightness=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=0 ; fi
+	ans=`${ZEN} --forms --add-entry="minimum keyboard brightness value (between 0 and 3)" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 3 ] && [ ${ans} -ge 0 ]; then
+			minbrightness=`cat ${CONFIG} |grep "^minbrightness="`
+			if [ -z "$minbrightness" ]; then
+				echo "minbrightness=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^minbrightness=.*/minbrightness=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "min keyboard brightness should be a value between 0 and 3"
+		fi
+	fi
+;;
+"Keyboard Options:Dim on idle time")
+	cv=`cat ${CONFIG} |grep "^idleoff=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=5 ; fi
+	ans=`${ZEN} --forms --add-entry="Dim keyboard brightness if computer unused for X seconds" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 86400 ] && [ ${ans} -ge 0 ]; then
+			idleoff=`cat ${CONFIG} |grep "^idleoff="`
+			if [ -z "$idleoff" ]; then
+				echo "idleoff=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^idleoff=.*/idleoff=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
+		fi
+	fi
+;;
+"Screen Options:Max Backlight")
+	cv=`cat ${CONFIG} |grep "^maxbacklight=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=15 ; fi
+	ans=`${ZEN} --forms --add-entry="maximum screen backlight value (between 4 and 15)" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 15 ] && [ ${ans} -ge 4 ]; then
+			maxbacklight=`cat ${CONFIG} |grep "^maxbacklight="`
+			if [ -z "$maxbacklight" ]; then
+				echo "maxbacklight=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^maxbacklight=.*/maxbacklight=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "max screen backlight should be a value between 4 and 15"
+		fi
+	fi
+;;
+"Screen Options:Min Backlight")
+	cv=`cat ${CONFIG} |grep "^minbacklight=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=0 ; fi
+	ans=`${ZEN} --forms --add-entry="minimum screen backlight value (between 0 and 3)" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 3 ] && [ ${ans} -ge 0 ]; then
+			minbacklight=`cat ${CONFIG} |grep "^minbacklight="`
+			if [ -z "$minbacklight" ]; then
+				echo "minbacklight=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^minbacklight=.*/minbacklight=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 0 and 3"
+		fi
+	fi
+;;
+"Screen Options:Dim on idle time")
+	cv=`cat ${CONFIG} |grep "^screenidle=" |cut -f 2 -d "="`
+	if [ -z $cv ]; then cv=30 ; fi
+	ans=`${ZEN} --forms --add-entry="Dim screen backlight if computer unused for X seconds" --text="current value: $cv"`
+	if [ $? == 0 ]; then 
+		if [ ${ans} -le 86400 ] && [ ${ans} -ge 0 ]; then
+			screenidle=`cat ${CONFIG} |grep "^screenidle="`
+			if [ -z "$screenidle" ]; then
+				echo "screenidle=${ans}" >> ${CONFIG}
+			else
+				sed -i "s/^screenidle=.*/screenidle=${ans}/" ${CONFIG}
+			fi
+			killall lightum 2>/dev/null
+			/usr/bin/lightum
+		else
+			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
+		fi
+	fi
+;;
+"About")
+	${ZEN} --no-wrap --info --text "lightum-indicator version ${VERSION}\n(c)2012 Pau Oliva Fora\nLicensed under GPL"
+;;
+esac
+done
