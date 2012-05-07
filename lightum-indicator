@@ -313,8 +313,8 @@ case "$s" in
 	# handle profiles here
 	echo "$s" |grep "Profile:.*:Save As..." >/dev/null
 	if [ $? == 0 ]; then
-		ans=`${ZEN} --forms --add-entry="Profile name (max 8 chars, no spaces)" --text="Enter the new profile name"`
-		profile=$(echo `echo "${ans}" |grep -oi "[a-z]"` |sed -e "s/ //g" |cut -c "1-8")
+		ans=`${ZEN} --forms --add-entry="Profile name (max 16 chars, no spaces)" --text="Enter the new profile name"`
+		profile=$(echo `echo "${ans}" |grep -oi "[a-z]"` |sed -e "s/ //g" |cut -c "1-16")
 		write="yes"
 		if [ -z "${profile}" ]; then
 			${ZEN} --no-wrap --error --text "Invalid profile name."
