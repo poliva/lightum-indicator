@@ -20,6 +20,7 @@ CONFIG="${CONFDIR}/lightum.conf"
 ZEN="zenity --name=lightum --title=lightum " 
 
 if [ ! -e "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
+	mkdir -p ${HOME}/.config/autostart/
 	cp /usr/share/applications/lightum-indicator.desktop ${HOME}/.config/autostart/lightum-indicator.desktop
 fi
 
