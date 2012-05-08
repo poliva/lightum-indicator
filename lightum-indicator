@@ -3,7 +3,7 @@
 # (c)2012 Pau Oliva Fora
 # License: GPLv2+
 
-VERSION="0.3"
+VERSION="0.4"
 
 function lightumreload ()
 {
