@@ -24,7 +24,7 @@ if [ ! -e "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
 	cp /usr/share/applications/lightum-indicator.desktop ${HOME}/.config/autostart/lightum-indicator.desktop
 fi
 
-profiles=`grep "^#PROFILE: " ${CONFDIR}/* |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
+profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
 
 currentprofile=`grep "^#PROFILE: " ${CONFIG} |cut -f 2 -d " "`
 if [ -z "${currentprofile}" ]; then currentprofile="Default" ; fi
@@ -120,8 +120,7 @@ case "$s" in
 		else
 			sed -i "s/^manualmode=.*/manualmode=0/" ${CONFIG}
 		fi
-		killall lightum 2>/dev/null
-		/usr/bin/lightum
+		kill -USR1 $(pidof lightum) || lightum
 		lightumreload
 		${CONFDIR}/lightum-reload.$$ &
 	fi
@@ -136,8 +135,7 @@ case "$s" in
 		else
 			sed -i "s/^manualmode=.*/manualmode=1/" ${CONFIG}
 		fi
-		killall lightum 2>/dev/null
-		/usr/bin/lightum
+		kill -USR1 $(pidof lightum) || lightum
 		lightumreload
 		${CONFDIR}/lightum-reload.$$ &
 	fi
@@ -152,8 +150,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=2/" ${CONFIG}
 		fi
-		killall lightum 2>/dev/null
-		/usr/bin/lightum
+		kill -USR1 $(pidof lightum) || lightum
 		lightumreload
 		${CONFDIR}/lightum-reload.$$ &
 	fi
@@ -168,8 +165,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=1/" ${CONFIG}
 		fi
-		killall lightum 2>/dev/null
-		/usr/bin/lightum
+		kill -USR1 $(pidof lightum) || lightum
 		lightumreload
 		${CONFDIR}/lightum-reload.$$ &
 	fi
@@ -184,8 +180,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=3/" ${CONFIG}
 		fi
-		killall lightum 2>/dev/null
-		/usr/bin/lightum
+		kill -USR1 $(pidof lightum) || lightum
 		lightumreload
 		${CONFDIR}/lightum-reload.$$ &
 	fi
@@ -202,8 +197,7 @@ case "$s" in
 			else
 				sed -i "s/^maxbrightness=.*/maxbrightness=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "max keyboard brightness should be a value between 4 and 255."
 		fi
@@ -221,8 +215,7 @@ case "$s" in
 			else
 				sed -i "s/^minbrightness=.*/minbrightness=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "min keyboard brightness should be a value between 0 and 3"
 		fi
@@ -240,8 +233,7 @@ case "$s" in
 			else
 				sed -i "s/^idleoff=.*/idleoff=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
 		fi
@@ -259,8 +251,7 @@ case "$s" in
 			else
 				sed -i "s/^maxbacklight=.*/maxbacklight=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "max screen backlight should be a value between 4 and 15"
 		fi
@@ -278,8 +269,7 @@ case "$s" in
 			else
 				sed -i "s/^minbacklight=.*/minbacklight=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 0 and 3"
 		fi
@@ -297,8 +287,7 @@ case "$s" in
 			else
 				sed -i "s/^screenidle=.*/screenidle=${ans}/" ${CONFIG}
 			fi
-			killall lightum 2>/dev/null
-			/usr/bin/lightum
+			kill -USR1 $(pidof lightum) || lightum
 		else
 			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
 		fi
@@ -338,8 +327,7 @@ case "$s" in
 				fi
 				cp "${CONFIG}" "${CONFDIR}/lightum-${profile}.conf"
 				${ZEN} --no-wrap --info --text "Profile '${profile}' successfully saved."
-				killall lightum 2>/dev/null
-				/usr/bin/lightum
+				kill -USR1 $(pidof lightum) || lightum
 				lightumreload
 				${CONFDIR}/lightum-reload.$$ &
 			fi
@@ -353,8 +341,7 @@ case "$s" in
 			${ZEN} --no-wrap --question --text="Load profile '${profile}'?"
 			if [ $? == 0 ]; then
 				cp "${CONFDIR}/lightum-${profile}.conf" "${CONFIG}"
-				killall lightum 2>/dev/null
-				/usr/bin/lightum
+				kill -USR1 $(pidof lightum) || lightum
 				lightumreload
 				${CONFDIR}/lightum-reload.$$ &
 			fi
@@ -370,8 +357,7 @@ case "$s" in
 			${ZEN} --no-wrap --question --text="Really delete profile '${profile}'?"
 			if [ $? == 0 ]; then
 				rm -f "${CONFDIR}/lightum-${profile}.conf"
-				killall lightum 2>/dev/null
-				/usr/bin/lightum
+				kill -USR1 $(pidof lightum) || lightum
 				lightumreload
 				${CONFDIR}/lightum-reload.$$ &
 			fi
