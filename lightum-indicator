@@ -19,9 +19,15 @@ CONFDIR="${HOME}/.config/lightum/"
 CONFIG="${CONFDIR}/lightum.conf"
 ZEN="zenity --name=lightum --title=lightum " 
 
-if [ ! -e "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
+# make sure indicator auto-starts
+if [ ! -f "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
 	mkdir -p ${HOME}/.config/autostart/
 	cp /usr/share/applications/lightum-indicator.desktop ${HOME}/.config/autostart/lightum-indicator.desktop
+fi
+
+# conf dir must exist
+if [ ! -d "${CONFDIR}" ]; then
+	mkdir -p "${CONFDIR}"
 fi
 
 profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
@@ -29,7 +35,8 @@ profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONF
 currentprofile=`grep "^#PROFILE: " ${CONFIG} |cut -f 2 -d " "`
 if [ -z "${currentprofile}" ]; then currentprofile="Default" ; fi
 
-PROFILEOPTS="Profile:$currentprofile:Save As..."
+PROFILEOPTS="Profile:$currentprofile:Save
+Profile:$currentprofile:Save As..."
 
 for file in ${profiles} ; do
 	profile=`cat ${file} |grep "^#PROFILE: " |cut -f 2 -d " "`
@@ -103,9 +110,10 @@ esac
 
 ICON="/usr/share/lightum-indicator/icons/${IC1}${IC2}.png"
 
-echo "$MANUALMODEOPTS
+echo "$PROFILEOPTS
+
+$MANUALMODEOPTS
 $WORKMODEOPTS
-$PROFILEOPTS
 About" | \
 /usr/share/lightum-indicator/cappind-lightum.py -p -i ${ICON} | \
 while read s; do
@@ -319,18 +327,40 @@ case "$s" in
 			fi
 
 			if [ "${write}" == "yes" ]; then
-				grep "^#PROFILE: " ${CONFIG}
-				if [ $? == 0 ]; then
-					sed -i "s/^#PROFILE: .*/#PROFILE: ${profile}/" ${CONFIG}
-				else
-					echo "#PROFILE: ${profile}" >> ${CONFIG}
-				fi
 				cp "${CONFIG}" "${CONFDIR}/lightum-${profile}.conf"
+				grep "^#PROFILE: " "${CONFDIR}/lightum-${profile}.conf" >/dev/null
+				if [ $? == 0 ]; then
+					sed -i "s/^#PROFILE: .*/#PROFILE: ${profile}/" "${CONFDIR}/lightum-${profile}.conf"
+				else
+					echo "#PROFILE: ${profile}" >> "${CONFDIR}/lightum-${profile}.conf"
+				fi
 				${ZEN} --no-wrap --info --text "Profile '${profile}' successfully saved."
-				kill -USR1 $(pidof lightum) || lightum
 				lightumreload
 				${CONFDIR}/lightum-reload.$$ &
 			fi
+		fi
+	fi
+
+	echo "$s" |grep "Profile:.*:Save$" >/dev/null
+	if [ $? == 0 ]; then
+		profile=`echo $s |cut -f 2 -d ":"`
+		if [ -f "${CONFDIR}/lightum-${profile}.conf" ]; then
+			write="no"
+			${ZEN} --no-wrap --question --text="Overwrite profile '${profile}' with current settings?"
+			if [ $? == 0 ]; then
+				write="yes"
+			fi
+		fi
+
+		if [ "${write}" == "yes" ]; then
+			grep "^#PROFILE: " ${CONFIG} >/dev/null
+			if [ $? == 0 ]; then
+				sed -i "s/^#PROFILE: .*/#PROFILE: ${profile}/" ${CONFIG}
+			else
+				echo "#PROFILE: ${profile}" >> ${CONFIG}
+			fi
+			cp "${CONFIG}" "${CONFDIR}/lightum-${profile}.conf"
+			${ZEN} --no-wrap --info --text "Profile '${profile}' successfully saved."
 		fi
 	fi
 
@@ -357,7 +387,6 @@ case "$s" in
 			${ZEN} --no-wrap --question --text="Really delete profile '${profile}'?"
 			if [ $? == 0 ]; then
 				rm -f "${CONFDIR}/lightum-${profile}.conf"
-				kill -USR1 $(pidof lightum) || lightum
 				lightumreload
 				${CONFDIR}/lightum-reload.$$ &
 			fi
