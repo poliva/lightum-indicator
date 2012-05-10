@@ -19,4 +19,4 @@ pidof lightum 2>&1 >/dev/null || lightum
 updatemenu
 
 # launch cappind-lightum
-/usr/share/lightum-indicator/cappind-lightum.py -i ${ICON} &
+/usr/share/lightum-indicator/cappind-lightum.py &
