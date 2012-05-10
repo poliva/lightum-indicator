@@ -19,16 +19,36 @@ CONFDIR="${HOME}/.config/lightum/"
 CONFIG="${CONFDIR}/lightum.conf"
 ZEN="zenity --name=lightum --title=lightum " 
 
+# make sure zenity is installed
+which zenity 2>&1 >/dev/null
+if [ $? != 0 ]; then
+	echo "Missing dependancy: this indicator needs zenity installed to work"
+	exit 1
+fi
+
+# make sure lightum is installed
+which lightum 2>&1 >/dev/null
+if [ $? != 0 ]; then
+	${ZEN} --no-wrap --error --text "Missing dependancy: this indicator needs lightum installed to work"
+	exit 1
+fi
+
 # make sure indicator auto-starts
 if [ ! -f "${HOME}/.config/autostart/lightum-indicator.desktop" ]; then
 	mkdir -p ${HOME}/.config/autostart/
 	cp /usr/share/applications/lightum-indicator.desktop ${HOME}/.config/autostart/lightum-indicator.desktop
 fi
 
+# make sure lightum is running, otherwise start it
+pidof lightum 2>&1 >/dev/null || lightum
+
 # conf dir must exist
 if [ ! -d "${CONFDIR}" ]; then
 	mkdir -p "${CONFDIR}"
 fi
+
+# conf file must exist
+touch "${CONFIG}"
 
 profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
 
