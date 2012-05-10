@@ -1,0 +1,100 @@
+# lightum-indicator include script
+# (c)2012 Pau Oliva Fora
+# License: GPLv2+
+
+VERSION="0.4"
+
+CONFDIR="${HOME}/.config/lightum/"
+CONFIG="${CONFDIR}/lightum.conf"
+ZEN="zenity --name=lightum --title=lightum " 
+
+function updatemenu ()
+{
+
+	profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
+
+	currentprofile=`grep "^#PROFILE: " ${CONFIG} |cut -f 2 -d " "`
+	if [ -z "${currentprofile}" ]; then currentprofile="Default" ; fi
+
+	PROFILEOPTS="Profile:$currentprofile:Save
+Profile:$currentprofile:Save As..."
+
+	for file in ${profiles} ; do
+		profile=`cat ${file} |grep "^#PROFILE: " |cut -f 2 -d " "`
+		if [ "${profile}" == "${currentprofile}" ]; then
+			PROFILEOPTS="${PROFILEOPTS}
+Profile:$profile:*Load
+Profile:$profile:*Delete"
+		else
+			PROFILEOPTS="${PROFILEOPTS}
+Profile:$profile:Load
+Profile:$profile:Delete"
+		fi
+	done
+
+	manualmode=`cat ${CONFIG} |grep "^manualmode="`
+	case "$manualmode" in
+	"manualmode=1")
+	MANUALMODEOPTS="Mode:Auto
+Mode:*Manual"
+	IC1="M"
+	;;
+	*)
+	MANUALMODEOPTS="Mode:*Auto
+Mode:Manual"
+	IC1="A"
+	;;
+	esac
+
+	workmode=`cat ${CONFIG} |grep "^workmode="`
+	case "$workmode" in
+	"workmode=1")
+	WORKMODEOPTS="Manage:Screen Only
+Manage:*Keyboard Only
+Manage:Screen + Keyboard
+Keyboard Options:Max Brightness
+Keyboard Options:Min Brightness
+Keyboard Options:Dim on idle time
+Screen Options:*Max Backlight
+Screen Options:*Min Backlight
+Screen Options:*Dim on idle time"
+	IC2="K"
+	;;
+
+	"workmode=2")
+	WORKMODEOPTS="Manage:*Screen Only
+Manage:Keyboard Only
+Manage:Screen + Keyboard
+Keyboard Options:*Max Brightness
+Keyboard Options:*Min Brightness
+Keyboard Options:*Dim on idle time
+Screen Options:Max Backlight
+Screen Options:Min Backlight
+Screen Options:Dim on idle time"
+	IC2="S"
+	;;
+
+	*)
+	WORKMODEOPTS="Manage:Screen Only
+Manage:Keyboard Only
+Manage:*Screen + Keyboard
+Keyboard Options:Max Brightness
+Keyboard Options:Min Brightness
+Keyboard Options:Dim on idle time
+Screen Options:Max Backlight
+Screen Options:Min Backlight
+Screen Options:Dim on idle time"
+	IC2="B"
+	;;
+
+	esac
+
+	ICON="/usr/share/lightum-indicator/icons/${IC1}${IC2}.png"
+
+	echo "$PROFILEOPTS
+
+$MANUALMODEOPTS
+$WORKMODEOPTS
+About" > ${CONFDIR}/indicator.menu
+}
+

@@ -1,4 +1,16 @@
 #!/usr/bin/python
+#
+# lightum-indicator applet
+# (c) 2012 Pau Oliva Fora
+#
+# based on: 
+#         cappindicator, command line generic appindicator 
+#         by reda_ea <reda.ea@gmail.com>
+#         license is do whatever you want with this code i don't care
+#
+# changes introduced in lightum-indicator licensed under GPLv2+
+#
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -7,50 +19,47 @@ import sys
 import subprocess
 import argparse
 import gobject
+import os
 
 ICON_THEME = gtk.icon_theme_get_default()
 
-# cappindicator, command line generic appindicator 
-# by reda_ea <reda.ea@gmail.com>
-# license is do whatever you want with this code i don't care
+class LightumIndicator:
 
-# accepts input in forms of multiple lines
-# of the form menu:submenu:...:entry:command
-# empty command means separator
-# implied parent menus are automatically created
-# entries in the same path appear in the same order as in the input
-# undefined behaviour on wrong input
-
-# modified by pof for lightum-indicator:
-# if a submenu item begins with '*' it will be shown as disabled
-
-class CmdAppIndicator:
-
-	def __init__(self, persist, icon, label):
-		# parameters
-		self.persist = persist #True
+	def __init__(self):
+		# icon
+		icon = "/usr/share/lightum-indicator/icons/lightum.png"
 		self.icon = icon #'terminal'
+		# status
 		self.status = appindicator.STATUS_ATTENTION # ACTIVE
-		self.label = label
 		# indicator
-		self.ind = appindicator.Indicator ("c-indicator", self.icon, appindicator.CATEGORY_OTHER)
-		self.ind.set_label(self.label)
+		self.ind = appindicator.Indicator ("lightum-indicator", self.icon, appindicator.CATEGORY_OTHER)
 		#self.ind.set_attention_icon (self.icon)
 		self.ind.set_status(self.status)
 		# menu
 		self.menu = gtk.Menu()
+		self.read_config()
+		
+
+	def read_config(self):
+		for i in self.menu.get_children():
+			self.menu.remove(i) # check here if you want to remove this child
 		self.submenus = dict()
-		for line in sys.stdin:
+		filename = os.getenv("HOME") + '/.config/lightum/indicator.menu'
+		in_file = open(filename,"r")
+		while (1):
+			line = in_file.readline()
+			if line == "":
+				break
 			line = line[0:len(line)-1] # removing last '\n'
 			self.add_menu(self.menu, line, line) 
-		if self.persist:
-			self.add_quit()
+		in_file.close()
+		self.add_quit()
 		self.menu.show()
 		self.ind.set_menu(self.menu)
 	
 	def add_entry(self, parent, name, path, state):
 		ent = gtk.MenuItem(name)
-		ent.connect("activate", self.say, path)
+		ent.connect("activate", self.run, path)
 		ent.show()
 		if state == 0:
 			ent.set_sensitive(False)
@@ -68,16 +77,11 @@ class CmdAppIndicator:
 		ent.show()
 		self.menu.append(ent)
 	
-	def run(self, w, cmd):
-		subprocess.Popen(cmd, shell=True)
-		if not self.persist:
-			gtk.main_quit()
-	
-	def say(self, w, name):
-		print name
-		sys.stdout.flush()
-		if not self.persist:
-			gtk.main_quit()
+	def run(self, w, name):
+		cmd = "/usr/share/lightum-indicator/lightum-indicator-helper " + name
+		p = subprocess.Popen(cmd, shell=True)
+		p.wait()
+		self.read_config()
 	
 	def get_child(self, parent, name):
 		if parent not in self.submenus:
@@ -112,22 +116,5 @@ class CmdAppIndicator:
 
 
 if __name__ == "__main__":
-	# command line params
-	parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-	description='Command line generic appindicator.\n\n'
-	'Menu elements are given in standard input as lines in the form:\n\n'
-	'\tmenu:submenu:subsubmenu:entry\n\n'
-	'Menu structure is automatically built, selecting a leaf '
-	'will print the associated input line (the whole path).')
-	parser.add_argument('-i', '--icon', default='terminal', help='the indicator icon name')
-	parser.add_argument('-l', '--label', default='', help='optional label (not recommended)')
-	parser.add_argument('-p', '--persist', action='store_true', default=False,
-		help='keep the indicator running after a selection (an additional "Quit" entry will be added)')
-	parser.add_argument('-t', '--timeout', type=int, default=-1,
-		help='a timeout in seconds after which the indicator will be closed')
-	args =  parser.parse_args()
-	if args.timeout >= 0:
-		gobject.timeout_add(args.timeout*1000, gtk.main_quit)
-	indicator = CmdAppIndicator(args.persist, args.icon, args.label)
+	indicator = LightumIndicator()
 	gtk.main()
-

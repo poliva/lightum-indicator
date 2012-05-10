@@ -17,6 +17,8 @@ install:
 	$(INSTALL) $(srcdir)/lightum-indicator $(bindir)/lightum-indicator
 	mkdir -p $(shadir)
 	$(INSTALL) $(srcdir)/cappind-lightum.py $(shadir)/cappind-lightum.py
+	$(INSTALL) $(srcdir)/lightum-indicator-include $(shadir)/lightum-indicator-include
+	$(INSTALL) $(srcdir)/lightum-indicator-helper $(shadir)/lightum-indicator-helper
 	mkdir -p $(appdir)
 	$(INSTALLDATA) $(srcdir)/lightum-indicator.desktop $(appdir)/lightum-indicator.desktop
 	mkdir -p $(shadir)/icons/
