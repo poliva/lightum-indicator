@@ -18,4 +18,4 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, lightum (>= 2.1),
  debianutils, sysvinit-utils, python-gtk2, python-appindicator
 Description: Indicator for Lightum light sensor daemon
  This is a simple indicator applet that allows users of
- lightum to control it from the pannel.
+ lightum to control it from the panel.
