@@ -43,7 +43,7 @@ case "$s" in
 		else
 			sed -i "s/^manualmode=.*/manualmode=0/" ${CONFIG}
 		fi
-		kill -USR1 $(pidof lightum) || lightum
+		kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		updatemenu
 	fi
 ;;
@@ -57,7 +57,7 @@ case "$s" in
 		else
 			sed -i "s/^manualmode=.*/manualmode=1/" ${CONFIG}
 		fi
-		kill -USR1 $(pidof lightum) || lightum
+		kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		updatemenu
 	fi
 ;;
@@ -71,7 +71,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=2/" ${CONFIG}
 		fi
-		kill -USR1 $(pidof lightum) || lightum
+		kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		updatemenu
 	fi
 ;;
@@ -85,7 +85,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=1/" ${CONFIG}
 		fi
-		kill -USR1 $(pidof lightum) || lightum
+		kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		updatemenu
 	fi
 ;;
@@ -99,7 +99,7 @@ case "$s" in
 		else
 			sed -i "s/^workmode=.*/workmode=3/" ${CONFIG}
 		fi
-		kill -USR1 $(pidof lightum) || lightum
+		kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		updatemenu
 	fi
 ;;
@@ -115,7 +115,7 @@ case "$s" in
 			else
 				sed -i "s/^maxbrightness=.*/maxbrightness=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "max keyboard brightness should be a value between 4 and 255."
 		fi
@@ -133,7 +133,7 @@ case "$s" in
 			else
 				sed -i "s/^minbrightness=.*/minbrightness=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "min keyboard brightness should be a value between 0 and 3"
 		fi
@@ -151,7 +151,7 @@ case "$s" in
 			else
 				sed -i "s/^idleoff=.*/idleoff=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
 		fi
@@ -169,7 +169,7 @@ case "$s" in
 			else
 				sed -i "s/^maxbacklight=.*/maxbacklight=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "max screen backlight should be a value between 4 and 15"
 		fi
@@ -187,7 +187,7 @@ case "$s" in
 			else
 				sed -i "s/^minbacklight=.*/minbacklight=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 0 and 3"
 		fi
@@ -205,7 +205,7 @@ case "$s" in
 			else
 				sed -i "s/^screenidle=.*/screenidle=${ans}/" ${CONFIG}
 			fi
-			kill -USR1 $(pidof lightum) || lightum
+			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
 			${ZEN} --no-wrap --error --text "idle time should be a value between 0 and 86400 seconds"
 		fi
@@ -280,7 +280,7 @@ case "$s" in
 			${ZEN} --no-wrap --question --text="Load profile '${profile}'?"
 			if [ $? == 0 ]; then
 				cp "${CONFDIR}/lightum-${profile}.conf" "${CONFIG}"
-				kill -USR1 $(pidof lightum) || lightum
+				kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 				updatemenu
 			fi
 		else
