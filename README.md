@@ -6,7 +6,9 @@ Indicator for Lightum light sensor daemon
 (c)2012 Pau Oliva Fora - pof[at]eslack(.)org
 
 
-This is a simple indicator applet that allows users of [lightum](https://github.com/poliva/lightum) to control it from the pannel.
+This is a simple indicator applet that allows users of [lightum](https://github.com/poliva/lightum) to control it from the panel.
+
+It also have profile management, so you can save different profiles and switch between them quickly.
 
 ## Screenshot
 ![alt text](https://github.com/poliva/lightum-indicator/raw/master/icons/lightum-indicator.png "lightum-indicator screenshot")
