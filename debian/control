@@ -1,0 +1,21 @@
+Source: lightum-indicator
+Section: misc
+Priority: extra
+Maintainer: Pau Oliva Fora (pof) <pau@eslack.org>
+Build-Depends: debhelper (>= 8.0.0),
+ autotools-dev
+Build-Depends-Indep: python, python-central
+Standards-Version: 3.9.3
+XS-Python-Version: all
+Homepage: https://github.com/poliva/lightum-indicator
+Vcs-Git: git://github.com/poliva/lightum-indicator.git
+Vcs-Browser: https://github.com/poliva/lightum-indicator
+
+Package: lightum-indicator
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lightum (>= 2.1), 
+ zenity, python, bash, procps, findutils, awk, grep, coreutils,
+ debianutils, sysvinit-utils, python-gtk2, python-appindicator
+Description: Indicator for Lightum light sensor daemon
+ This is a simple indicator applet that allows users of
+ lightum to control it from the pannel.
