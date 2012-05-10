@@ -15,10 +15,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import appindicator
-import sys
 import subprocess
-import argparse
-import gobject
 import os
 
 ICON_THEME = gtk.icon_theme_get_default()
@@ -26,23 +23,28 @@ ICON_THEME = gtk.icon_theme_get_default()
 class LightumIndicator:
 
 	def __init__(self):
-		# icon
-		icon = "/usr/share/lightum-indicator/icons/lightum.png"
-		self.icon = icon #'terminal'
 		# status
 		self.status = appindicator.STATUS_ATTENTION # ACTIVE
 		# indicator
-		self.ind = appindicator.Indicator ("lightum-indicator", self.icon, appindicator.CATEGORY_OTHER)
-		#self.ind.set_attention_icon (self.icon)
+		self.ind = appindicator.Indicator ("lightum-indicator", "", appindicator.CATEGORY_OTHER)
 		self.ind.set_status(self.status)
+		# icon
+		self.update_icon()
 		# menu
 		self.menu = gtk.Menu()
 		self.read_config()
 		
+	def update_icon(self):
+		filename = os.getenv("HOME") + '/.config/lightum/indicator.icon'
+		in_file = open(filename, "r")
+		icon = in_file.readline()
+		in_file.close()
+		icon = icon[0:len(icon)-1]
+		self.ind.set_icon(icon)
 
 	def read_config(self):
 		for i in self.menu.get_children():
-			self.menu.remove(i) # check here if you want to remove this child
+			self.menu.remove(i)
 		self.submenus = dict()
 		filename = os.getenv("HOME") + '/.config/lightum/indicator.menu'
 		in_file = open(filename,"r")
@@ -56,6 +58,7 @@ class LightumIndicator:
 		self.add_quit()
 		self.menu.show()
 		self.ind.set_menu(self.menu)
+		self.update_icon()
 	
 	def add_entry(self, parent, name, path, state):
 		ent = gtk.MenuItem(name)

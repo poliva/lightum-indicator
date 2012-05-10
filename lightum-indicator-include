@@ -96,5 +96,6 @@ Screen Options:Dim on idle time"
 $MANUALMODEOPTS
 $WORKMODEOPTS
 About" > ${CONFDIR}/indicator.menu
+	echo "${ICON}" > ${CONFDIR}/indicator.icon
 }
 
