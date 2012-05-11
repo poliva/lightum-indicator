@@ -178,9 +178,9 @@ case "$s" in
 "Screen Options:Min Backlight")
 	cv=`cat ${CONFIG} |grep "^minbacklight=" |cut -f 2 -d "="`
 	if [ -z "$cv" ]; then cv=0 ; fi
-	ans=`${ZEN} --forms --add-entry="minimum screen backlight value (between 0 and 3)" --text="current value: $cv"`
+	ans=`${ZEN} --forms --add-entry="minimum screen backlight value (between 1 and 3)" --text="current value: $cv"`
 	if [ $? == 0 ]; then 
-		if [ ${ans} -le 3 ] && [ ${ans} -ge 0 ]; then
+		if [ ${ans} -le 3 ] && [ ${ans} -ge 1 ]; then
 			minbacklight=`cat ${CONFIG} |grep "^minbacklight="`
 			if [ -z "$minbacklight" ]; then
 				echo "minbacklight=${ans}" >> ${CONFIG}
@@ -189,7 +189,7 @@ case "$s" in
 			fi
 			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
-			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 0 and 3"
+			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 1 and 3"
 		fi
 	fi
 ;;
