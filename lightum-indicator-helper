@@ -160,9 +160,9 @@ case "$s" in
 "Screen Options:Max Backlight")
 	cv=`cat ${CONFIG} |grep "^maxbacklight=" |cut -f 2 -d "="`
 	if [ -z "$cv" ]; then cv=15 ; fi
-	ans=`${ZEN} --forms --add-entry="maximum screen backlight value (between 4 and 15)" --text="current value: $cv"`
+	ans=`${ZEN} --forms --add-entry="maximum screen backlight value (between 7 and 15)" --text="current value: $cv"`
 	if [ $? == 0 ]; then 
-		if [ ${ans} -le 15 ] && [ ${ans} -ge 4 ]; then
+		if [ ${ans} -le 15 ] && [ ${ans} -ge 7 ]; then
 			maxbacklight=`cat ${CONFIG} |grep "^maxbacklight="`
 			if [ -z "$maxbacklight" ]; then
 				echo "maxbacklight=${ans}" >> ${CONFIG}
@@ -171,16 +171,16 @@ case "$s" in
 			fi
 			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
-			${ZEN} --no-wrap --error --text "max screen backlight should be a value between 4 and 15"
+			${ZEN} --no-wrap --error --text "max screen backlight should be a value between 7 and 15"
 		fi
 	fi
 ;;
 "Screen Options:Min Backlight")
 	cv=`cat ${CONFIG} |grep "^minbacklight=" |cut -f 2 -d "="`
 	if [ -z "$cv" ]; then cv=0 ; fi
-	ans=`${ZEN} --forms --add-entry="minimum screen backlight value (between 1 and 3)" --text="current value: $cv"`
+	ans=`${ZEN} --forms --add-entry="minimum screen backlight value (between 1 and 6)" --text="current value: $cv"`
 	if [ $? == 0 ]; then 
-		if [ ${ans} -le 3 ] && [ ${ans} -ge 1 ]; then
+		if [ ${ans} -le 6 ] && [ ${ans} -ge 1 ]; then
 			minbacklight=`cat ${CONFIG} |grep "^minbacklight="`
 			if [ -z "$minbacklight" ]; then
 				echo "minbacklight=${ans}" >> ${CONFIG}
@@ -189,7 +189,7 @@ case "$s" in
 			fi
 			kill -USR1 $(pidof lightum) 2>/dev/null || lightum
 		else
-			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 1 and 3"
+			${ZEN} --no-wrap --error --text "min screen backlight should be a value between 1 and 6"
 		fi
 	fi
 ;;
