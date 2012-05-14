@@ -1,3 +1,10 @@
+lightum-indicator (0.7-ubuntu1) precise; urgency=low
+
+  * updated to version 0.7 
+  * make sure lightum version is >= 2.3
+
+ -- Pau Oliva Fora (pof) <pau@eslack.org>  Mon, 14 May 2012 21:17:51 +0200
+
 lightum-indicator (0.5-ubuntu1) precise; urgency=low
 
   * updated to v0.5
