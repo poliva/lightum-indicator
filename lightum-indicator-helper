@@ -244,7 +244,11 @@ case "$s" in
 				else
 					echo "#PROFILE: ${profile}" >> "${CONFDIR}/lightum-${profile}.conf"
 				fi
-				${ZEN} --no-wrap --info --text "Profile '${profile}' successfully saved."
+				${ZEN} --no-wrap --question --text "Profile '${profile}' successfully saved.\nDo you want to load it now?"
+				if [ $? == 0 ]; then
+					cp "${CONFDIR}/lightum-${profile}.conf" "${CONFIG}"
+					kill -USR1 $(pidof lightum) 2>/dev/null || lightum
+				fi
 				updatemenu
 			fi
 		fi
