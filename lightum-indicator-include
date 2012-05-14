@@ -2,7 +2,7 @@
 # (c)2012 Pau Oliva Fora
 # License: GPLv2+
 
-VERSION="0.5"
+VERSION="0.6"
 
 CONFDIR="${HOME}/.config/lightum/"
 CONFIG="${CONFDIR}/lightum.conf"
