@@ -277,6 +277,16 @@ case "$s" in
 		fi
 	fi
 
+	echo "$s" |grep "Profile:.*:View" >/dev/null
+	if [ $? == 0 ]; then
+		profile=`echo $s |cut -f 2 -d ":"`
+		if [ -f "${CONFDIR}/lightum-${profile}.conf" ]; then
+			cat "${CONFDIR}/lightum-${profile}.conf" |grep -v "^$" |grep -v "#" |${ZEN} --text-info --title="lightum profile ${profile}"
+		else
+			${ZEN} --no-wrap --error --text "Could not view profile, sorry."
+		fi
+	fi
+
 	echo "$s" |grep "Profile:.*:Load" >/dev/null
 	if [ $? == 0 ]; then
 		profile=`echo $s |cut -f 2 -d ":"`

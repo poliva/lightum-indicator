@@ -23,10 +23,12 @@ Profile:$currentprofile:Save As..."
 		profile=`cat ${file} |grep "^#PROFILE: " |cut -f 2 -d " "`
 		if [ "${profile}" == "${currentprofile}" ]; then
 			PROFILEOPTS="${PROFILEOPTS}
+Profile:$profile:View
 Profile:$profile:*Load
 Profile:$profile:*Delete"
 		else
 			PROFILEOPTS="${PROFILEOPTS}
+Profile:$profile:View
 Profile:$profile:Load
 Profile:$profile:Delete"
 		fi
