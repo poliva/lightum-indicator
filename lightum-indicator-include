@@ -10,6 +10,10 @@ ZEN="zenity --name=lightum --title=lightum "
 
 function updatemenu ()
 {
+	# conf dir must exist
+	if [ ! -d "${CONFDIR}" ]; then
+		mkdir -p "${CONFDIR}"
+	fi
 
 	profiles=`grep "^#PROFILE: " ${CONFDIR}/*.conf |cut -f 1 -d ":" |grep -v "${CONFIG}" |sort -u`
 
