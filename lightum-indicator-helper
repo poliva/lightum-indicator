@@ -214,6 +214,9 @@ case "$s" in
 "About")
 	${ZEN} --no-wrap --info --text "lightum-indicator version ${VERSION}\n(c)2012 Pau Oliva Fora\nLicensed under GPL"
 ;;
+"Profile:Refresh")
+	updatemenu
+;;
 
 
 

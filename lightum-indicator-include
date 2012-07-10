@@ -37,6 +37,8 @@ Profile:$profile:Load
 Profile:$profile:Delete"
 		fi
 	done
+	PROFILEOPTS="${PROFILEOPTS}
+Profile:Refresh"
 
 	manualmode=`cat ${CONFIG} |grep "^manualmode="`
 	case "$manualmode" in
